@@ -1,0 +1,87 @@
+C:\Users\yura\Documents\Otus\Git\otus-linux\Project2\Star task>vagrant reload --provision
+==> otuslinux2: Attempting graceful shutdown of VM...
+==> otuslinux2: Checking if box 'centos/7' version '1905.1' is up to date...
+==> otuslinux2: Clearing any previously set forwarded ports...
+==> otuslinux2: Clearing any previously set network interfaces...
+==> otuslinux2: Preparing network interfaces based on configuration...
+    otuslinux2: Adapter 1: nat
+    otuslinux2: Adapter 2: hostonly
+==> otuslinux2: Forwarding ports...
+    otuslinux2: 22 (guest) => 2222 (host) (adapter 1)
+==> otuslinux2: Running 'pre-boot' VM customizations...
+==> otuslinux2: Booting VM...
+==> otuslinux2: Waiting for machine to boot. This may take a few minutes...
+    otuslinux2: SSH address: 127.0.0.1:2222
+    otuslinux2: SSH username: vagrant
+    otuslinux2: SSH auth method: private key
+    otuslinux2: Warning: Connection reset. Retrying...
+    otuslinux2: Warning: Connection aborted. Retrying...
+==> otuslinux2: Machine booted and ready!
+==> otuslinux2: Checking for guest additions in VM...
+    otuslinux2: No guest additions were detected on the base box for this VM! Guest
+    otuslinux2: additions are required for forwarded ports, shared folders, host only
+    otuslinux2: networking, and more. If SSH fails on this machine, please install
+    otuslinux2: the guest additions and repackage the box to continue.
+    otuslinux2:
+    otuslinux2: This is not an error message; everything may continue to work properly,
+    otuslinux2: in which case you may ignore this message.
+==> otuslinux2: Setting hostname...
+==> otuslinux2: Configuring and enabling network interfaces...
+==> otuslinux2: Rsyncing folder: /cygdrive/c/Users/yura/Documents/Otus/Git/otus-linux/Project2/Star task/ => /vagrant
+==> otuslinux2: Running provisioner: shell...
+    otuslinux2: Running: inline script
+    otuslinux2: Loaded plugins: fastestmirror
+    otuslinux2: Loading mirror speeds from cached hostfile
+    otuslinux2:  * base: mirror.sale-dedic.com
+    otuslinux2:  * extras: mirror.sale-dedic.com
+    otuslinux2:  * updates: mirror.serverion.com
+    otuslinux2: Package mdadm-4.1-rc1_2.el7.x86_64 already installed and latest version
+    otuslinux2: Package 1:smartmontools-6.5-1.el7.x86_64 already installed and latest version
+    otuslinux2: Package hdparm-9.43-5.el7.x86_64 already installed and latest version
+    otuslinux2: Package gdisk-0.8.10-2.el7.x86_64 already installed and latest version
+    otuslinux2: Nothing to do
+    otuslinux2: mdadm: Unrecognised md component device - /dev/sdb
+    otuslinux2: mdadm: Unrecognised md component device - /dev/sdc
+    otuslinux2: mdadm: Unrecognised md component device - /dev/sdd
+    otuslinux2: mdadm: Unrecognised md component device - /dev/sde
+    otuslinux2: mdadm: Unrecognised md component device - /dev/sdf
+    otuslinux2: mdadm: Defaulting to version 1.2 metadata
+    otuslinux2: mdadm: array /dev/md0 started.
+
+C:\Users\yura\Documents\Otus\Git\otus-linux\Project2\Star task>vagrant ssh
+Last login: Mon Aug 12 14:12:12 2019 from 10.0.2.2
+Last login: Mon Aug 12 14:12:12 2019 from 10.0.2.2
+[vagrant@otuslinux2 ~]$ sudo mdadm -D /dev/md0
+/dev/md0:
+           Version : 1.2
+     Creation Time : Mon Aug 12 14:16:57 2019
+        Raid Level : raid6
+        Array Size : 761856 (744.00 MiB 780.14 MB)
+     Used Dev Size : 253952 (248.00 MiB 260.05 MB)
+      Raid Devices : 5
+     Total Devices : 5
+       Persistence : Superblock is persistent
+
+       Update Time : Mon Aug 12 14:18:22 2019
+             State : clean
+    Active Devices : 5
+   Working Devices : 5
+    Failed Devices : 0
+     Spare Devices : 0
+
+            Layout : left-symmetric
+        Chunk Size : 512K
+
+Consistency Policy : resync
+
+              Name : otuslinux2:0  (local to host otuslinux2)
+              UUID : 57dc0074:e7c66782:3bd43d1e:50fdc25f
+            Events : 17
+
+    Number   Major   Minor   RaidDevice State
+       0       8       16        0      active sync   /dev/sdb
+       1       8       32        1      active sync   /dev/sdc
+       2       8       48        2      active sync   /dev/sdd
+       3       8       64        3      active sync   /dev/sde
+       4       8       80        4      active sync   /dev/sdf
+[vagrant@otuslinux2 ~]$
