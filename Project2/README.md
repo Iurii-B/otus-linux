@@ -5,3 +5,5 @@ mdadm --detail --scan --verbose | awk '/ARRAY/ {print}' >> /etc/mdadm/mdadm.conf
 
 После этого запустил утилиту Script, провел тестирование отказа диска (mdadm --fail), его удаления из RAID и добавления обратно. Убедился, что массив персобирается.
 Создал на массиве 5 партиций ext4.
+
+Создал вторую версию Vagrantfile, где RADI собирается сразу при запуске ВМ. Сделал через box.vm.provision "shell" inline.
