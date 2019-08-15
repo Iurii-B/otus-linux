@@ -1,0 +1,95 @@
+[root@lvm vagrant]# lsblk
+NAME                       MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
+sda                          8:0    0   40G  0 disk
++-sda1                       8:1    0    1M  0 part
++-sda2                       8:2    0    1G  0 part /boot
+L-sda3                       8:3    0   39G  0 part
+  +-VolGroup00-LogVol00    253:0    0    8G  0 lvm  /
+  +-VolGroup00-LogVol01    253:1    0  1.5G  0 lvm  [SWAP]
+  L-VolGroup00-LogVol_Home 253:7    0    2G  0 lvm  /home
+sdb                          8:16   0   10G  0 disk
+sdc                          8:32   0    2G  0 disk
++-vg_var-lv_var_rmeta_0    253:2    0    4M  0 lvm
+¦ L-vg_var-lv_var          253:6    0  952M  0 lvm  /var
+L-vg_var-lv_var_rimage_0   253:3    0  952M  0 lvm
+  L-vg_var-lv_var          253:6    0  952M  0 lvm  /var
+sdd                          8:48   0    1G  0 disk
++-vg_var-lv_var_rmeta_1    253:4    0    4M  0 lvm
+¦ L-vg_var-lv_var          253:6    0  952M  0 lvm  /var
+L-vg_var-lv_var_rimage_1   253:5    0  952M  0 lvm
+  L-vg_var-lv_var          253:6    0  952M  0 lvm  /var
+sde                          8:64   0    1G  0 disk
+[root@lvm vagrant]# touch /home/file{1..20}
+[root@lvm vagrant]# ls -l /home
+total 0
+-rw-r--r--. 1 root    root     0 Aug 15 07:18 file1
+-rw-r--r--. 1 root    root     0 Aug 15 07:18 file10
+-rw-r--r--. 1 root    root     0 Aug 15 07:18 file11
+-rw-r--r--. 1 root    root     0 Aug 15 07:18 file12
+-rw-r--r--. 1 root    root     0 Aug 15 07:18 file13
+-rw-r--r--. 1 root    root     0 Aug 15 07:18 file14
+-rw-r--r--. 1 root    root     0 Aug 15 07:18 file15
+-rw-r--r--. 1 root    root     0 Aug 15 07:18 file16
+-rw-r--r--. 1 root    root     0 Aug 15 07:18 file17
+-rw-r--r--. 1 root    root     0 Aug 15 07:18 file18
+-rw-r--r--. 1 root    root     0 Aug 15 07:18 file19
+-rw-r--r--. 1 root    root     0 Aug 15 07:18 file2
+-rw-r--r--. 1 root    root     0 Aug 15 07:18 file20
+-rw-r--r--. 1 root    root     0 Aug 15 07:18 file3
+-rw-r--r--. 1 root    root     0 Aug 15 07:18 file4
+-rw-r--r--. 1 root    root     0 Aug 15 07:18 file5
+-rw-r--r--. 1 root    root     0 Aug 15 07:18 file6
+-rw-r--r--. 1 root    root     0 Aug 15 07:18 file7
+-rw-r--r--. 1 root    root     0 Aug 15 07:18 file8
+-rw-r--r--. 1 root    root     0 Aug 15 07:18 file9
+drwx------. 3 vagrant vagrant 95 Aug 14 20:43 vagrant
+[root@lvm vagrant]#
+[root@lvm vagrant]#
+[root@lvm vagrant]#  lvcreate -L 100MB -s -n home_snap /dev/VolGroup00/LogVol_Home
+  Rounding up size to full physical extent 128.00 MiB
+  Logical volume "home_snap" created.
+[root@lvm vagrant]#  rm -f /home/file{11..20}
+[root@lvm vagrant]# ls -l /home
+total 0
+-rw-r--r--. 1 root    root     0 Aug 15 07:18 file1
+-rw-r--r--. 1 root    root     0 Aug 15 07:18 file10
+-rw-r--r--. 1 root    root     0 Aug 15 07:18 file2
+-rw-r--r--. 1 root    root     0 Aug 15 07:18 file3
+-rw-r--r--. 1 root    root     0 Aug 15 07:18 file4
+-rw-r--r--. 1 root    root     0 Aug 15 07:18 file5
+-rw-r--r--. 1 root    root     0 Aug 15 07:18 file6
+-rw-r--r--. 1 root    root     0 Aug 15 07:18 file7
+-rw-r--r--. 1 root    root     0 Aug 15 07:18 file8
+-rw-r--r--. 1 root    root     0 Aug 15 07:18 file9
+drwx------. 3 vagrant vagrant 95 Aug 14 20:43 vagrant
+[root@lvm vagrant]# umount /home
+[root@lvm vagrant]#  lvconvert --merge /dev/VolGroup00/home_snap
+  Merging of volume VolGroup00/home_snap started.
+  VolGroup00/LogVol_Home: Merged: 100.00%
+[root@lvm vagrant]# ls -l /home
+total 0
+[root@lvm vagrant]#  mount /home
+[root@lvm vagrant]# ls -l /home
+total 0
+-rw-r--r--. 1 root    root     0 Aug 15 07:18 file1
+-rw-r--r--. 1 root    root     0 Aug 15 07:18 file10
+-rw-r--r--. 1 root    root     0 Aug 15 07:18 file11
+-rw-r--r--. 1 root    root     0 Aug 15 07:18 file12
+-rw-r--r--. 1 root    root     0 Aug 15 07:18 file13
+-rw-r--r--. 1 root    root     0 Aug 15 07:18 file14
+-rw-r--r--. 1 root    root     0 Aug 15 07:18 file15
+-rw-r--r--. 1 root    root     0 Aug 15 07:18 file16
+-rw-r--r--. 1 root    root     0 Aug 15 07:18 file17
+-rw-r--r--. 1 root    root     0 Aug 15 07:18 file18
+-rw-r--r--. 1 root    root     0 Aug 15 07:18 file19
+-rw-r--r--. 1 root    root     0 Aug 15 07:18 file2
+-rw-r--r--. 1 root    root     0 Aug 15 07:18 file20
+-rw-r--r--. 1 root    root     0 Aug 15 07:18 file3
+-rw-r--r--. 1 root    root     0 Aug 15 07:18 file4
+-rw-r--r--. 1 root    root     0 Aug 15 07:18 file5
+-rw-r--r--. 1 root    root     0 Aug 15 07:18 file6
+-rw-r--r--. 1 root    root     0 Aug 15 07:18 file7
+-rw-r--r--. 1 root    root     0 Aug 15 07:18 file8
+-rw-r--r--. 1 root    root     0 Aug 15 07:18 file9
+drwx------. 3 vagrant vagrant 95 Aug 14 20:43 vagrant
+[root@lvm vagrant]#
