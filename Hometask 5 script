@@ -1,0 +1,17 @@
+#!/bin/bash
+#Скрипт для имитации работы команды ps ax. Сделан для домашнего задания 5 в курсе Otus "Администратор Linux"
+printf %-10s%-10s%-10s%-100s PID TTY STAT COMMAND # Выводим шапку таблицы
+for PID_TMP in `ls /proc/ | grep \^\[0-9] | sort -n` # Определяем номера процессов по номерам папок в "файловой системе" /proc/
+do
+        PID=$PID_TMP
+        STATE1=`cat /proc/$PID_TMP/status | awk '/State/{ print $2 }'` # Состояние процесса берем из файла status
+        TTY1=`cat /proc/$PID_TMP/status | awk '/Uid/{ print $2 }'` # TTY берем также из файла status
+                if [[ TTY1 -eq 0 ]]
+                then
+                    TTY='?'
+                else
+                        TTY=`TTY1`
+                fi
+        COMMAND="[`awk '/Name/{ print $2 }' /proc/$PID_TMP/status`]" # Аналогично с COMMAND
+        printf "%-10s%-10s%-10s%-10s%-100s\n" $PID $TTY $STATE1 $COMMAND
+done
