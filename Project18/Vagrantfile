@@ -18,6 +18,7 @@ MACHINES = {
                    {ip: '192.168.0.1', adapter: 3, netmask: "255.255.255.240", virtualbox__intnet: "dir-net"},
                    {ip: '192.168.0.33', adapter: 4, netmask: "255.255.255.240", virtualbox__intnet: "hw-net"},
                    {ip: '192.168.0.65', adapter: 5, netmask: "255.255.255.192", virtualbox__intnet: "mgt-net"},
+				   {ip: '192.168.2.5', adapter: 6, netmask: "255.255.255.252", virtualbox__intnet: "r1-center-net"},
                 ]
   },
   
@@ -30,6 +31,22 @@ MACHINES = {
                 ]
   },
   
+  :office1Router => {
+        :box_name => "centos/7",
+        :net => [
+                   {ip: '192.168.255.6', adapter: 2, netmask: "255.255.255.252", virtualbox__intnet: "r1-center-net"},
+                   {ip: '192.168.2.1', adapter: 3, netmask: "255.255.255.224", virtualbox__intnet: "dev1-net"},
+                ]
+  },
+  
+  :office1Server => {
+        :box_name => "centos/7",
+        :net => [
+                   {ip: '192.168.2.2', adapter: 2, netmask: "255.255.255.224", virtualbox__intnet: "dev1-net"},
+                   {adapter: 3, auto_config: false, virtualbox__intnet: true},
+                   {adapter: 4, auto_config: false, virtualbox__intnet: true},
+				]
+}
 }
 
 Vagrant.configure("2") do |config|
@@ -43,6 +60,9 @@ Vagrant.configure("2") do |config|
 
         boxconfig[:net].each do |ipconf|
           box.vm.network "private_network", ipconf
+		  
+		box.vm.provider :virtualbox do |vb|
+          vb.customize ["modifyvm", :id, "--memory", "128"]
         end
         
         if boxconfig.key?(:public)
@@ -81,4 +101,4 @@ Vagrant.configure("2") do |config|
   
   
 end
-
+end
