@@ -1,7 +1,5 @@
 # -*- mode: ruby -*-
 # vim: set ft=ruby :
-# -*- mode: ruby -*-
-# vim: set ft=ruby :
 
 MACHINES = {
   :inetRouter => {
@@ -11,11 +9,19 @@ MACHINES = {
                    {ip: '192.168.255.1', adapter: 2, netmask: "255.255.255.252", virtualbox__intnet: "router-net"},
                 ]
   },
+  :inetRouter2 => {
+        :box_name => "centos/7",
+        #:public => {:ip => '10.10.10.1', :adapter => 1},
+        :net => [
+                   {ip: '192.168.255.5', adapter: 2, netmask: "255.255.255.252", virtualbox__intnet: "router2-net"},
+                ]
+  },
   :centralRouter => {
         :box_name => "centos/7",
         :net => [
                    {ip: '192.168.255.2', adapter: 2, netmask: "255.255.255.252", virtualbox__intnet: "router-net"},
                    {ip: '192.168.0.1', adapter: 3, netmask: "255.255.255.240", virtualbox__intnet: "dir-net"},
+		   {ip: '192.168.255.6', adapter: 4, netmask: "255.255.255.252", virtualbox__intnet: "router2-net"},
                 ]
   },
   
@@ -53,31 +59,32 @@ Vagrant.configure("2") do |config|
         box.vm.provision "shell", inline: <<-SHELL
           mkdir -p ~root/.ssh
                 cp ~vagrant/.ssh/auth* ~root/.ssh
+	  sysctl net.ipv4.conf.all.forwarding=1
         SHELL
         
-        case boxname.to_s
-        when "inetRouter"
-          box.vm.provision "shell", run: "always", inline: <<-SHELL
-            ip route add 192.168.0.0/16 via 192.168.255.2 dev eth1
-            iptables -t nat -A POSTROUTING ! -d 192.168.0.0/16 -o eth0 -j MASQUERADE
-	    echo "192.168.0.0/16 via 192.168.255.2 dev eth1" >> /etc/sysconfig/network-scripts/route-eth1
-	    systemctl restart network
-            sysctl net.ipv4.conf.all.forwarding=1
-            SHELL
-        when "centralRouter"
-          box.vm.provision "shell", run: "always", inline: <<-SHELL
-	    ip route add 192.168.2.0/26 via 192.168.255.6 dev eth5
-            echo "DEFROUTE=no" >> /etc/sysconfig/network-scripts/ifcfg-eth0 
-            echo "GATEWAY=192.168.255.1" >> /etc/sysconfig/network-scripts/ifcfg-eth1
-            systemctl restart network
-            sysctl net.ipv4.conf.all.forwarding=1
-            SHELL
-        when "centralServer"
-          box.vm.provision "shell", run: "always", inline: <<-SHELL
-            echo "DEFROUTE=no" >> /etc/sysconfig/network-scripts/ifcfg-eth0 
-            echo "GATEWAY=192.168.0.1" >> /etc/sysconfig/network-scripts/ifcfg-eth1
-	    systemctl restart network
-            SHELL
+#        case boxname.to_s
+#        when "inetRouter"
+#          box.vm.provision "shell", run: "always", inline: <<-SHELL
+#            ip route add 192.168.0.0/16 via 192.168.255.2 dev eth1
+#            iptables -t nat -A POSTROUTING ! -d 192.168.0.0/16 -o eth0 -j MASQUERADE
+#	    echo "192.168.0.0/16 via 192.168.255.2 dev eth1" >> /etc/sysconfig/network-scripts/route-eth1
+#	    systemctl restart network
+#            sysctl net.ipv4.conf.all.forwarding=1
+#            SHELL
+#        when "centralRouter"
+#          box.vm.provision "shell", run: "always", inline: <<-SHELL
+#	    ip route add 192.168.2.0/26 via 192.168.255.6 dev eth5
+#            echo "DEFROUTE=no" >> /etc/sysconfig/network-scripts/ifcfg-eth0 
+#            echo "GATEWAY=192.168.255.1" >> /etc/sysconfig/network-scripts/ifcfg-eth1
+#            systemctl restart network
+#            sysctl net.ipv4.conf.all.forwarding=1
+#            SHELL
+#        when "centralServer"
+#          box.vm.provision "shell", run: "always", inline: <<-SHELL
+#            echo "DEFROUTE=no" >> /etc/sysconfig/network-scripts/ifcfg-eth0 
+#            echo "GATEWAY=192.168.0.1" >> /etc/sysconfig/network-scripts/ifcfg-eth1
+#	    systemctl restart network
+#            SHELL
 
       end
 
