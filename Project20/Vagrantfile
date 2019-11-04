@@ -1,96 +1,65 @@
 # -*- mode: ruby -*-
 # vim: set ft=ruby :
 
-MACHINES = {
-  :inetRouter => {
-        :box_name => "centos/7",
-        #:public => {:ip => '10.10.10.1', :adapter => 1},
-        :net => [
-                   {ip: '192.168.255.1', adapter: 2, netmask: "255.255.255.252", virtualbox__intnet: "router-net"},
-                ]
-  },
-  :inetRouter2 => {
-        :box_name => "centos/7",
-        #:public => {:ip => '10.10.10.1', :adapter => 1},
-        :net => [
-                   {ip: '192.168.255.5', adapter: 2, netmask: "255.255.255.252", virtualbox__intnet: "router2-net"},
-                ]
-  },
-  :centralRouter => {
-        :box_name => "centos/7",
-        :net => [
-                   {ip: '192.168.255.2', adapter: 2, netmask: "255.255.255.252", virtualbox__intnet: "router-net"},
-                   {ip: '192.168.0.1', adapter: 3, netmask: "255.255.255.240", virtualbox__intnet: "dir-net"},
-		   {ip: '192.168.255.6', adapter: 4, netmask: "255.255.255.252", virtualbox__intnet: "router2-net"},
-                ]
-  },
-  
-  :centralServer => {
-        :box_name => "centos/7",
-        :net => [
-                   {ip: '192.168.0.2', adapter: 2, netmask: "255.255.255.240", virtualbox__intnet: "dir-net"},
-                   {adapter: 3, auto_config: false, virtualbox__intnet: true},
-                   {adapter: 4, auto_config: false, virtualbox__intnet: true},
-                ]
-  },
-  
-}
 
 Vagrant.configure("2") do |config|
 
-  MACHINES.each do |boxname, boxconfig|
 
-    config.vm.define boxname do |box|
+    config.vm.define "inetRouter" do |inetRouter|
+        config.vm.box="centos/7"
+        config.vm.hostname="inetRouter"
+        inetRouter.vm.network "private_network", ip: "192.168.255.1", netmask: "255.255.255.252", virtualbox__intnet: "router-net"
+	inetRouter.vm.provision "shell", inline: <<-SHELL
+	  systemctl restart network
+	  ip route add 192.168.0.0/16 via 192.168.255.2 dev eth1
+          iptables -t nat -A POSTROUTING ! -d 192.168.0.0/16 -o eth0 -j MASQUERADE
+	SHELL
+    end
 
-        box.vm.box = boxconfig[:box_name]
-        box.vm.hostname = boxname.to_s
 
-        boxconfig[:net].each do |ipconf|
-          box.vm.network "private_network", ipconf
-		  
-		box.vm.provider :virtualbox do |vb|
-          vb.customize ["modifyvm", :id, "--memory", "128"]
+    config.vm.define "inet2Router" do |inet2Router|
+        config.vm.box="centos/7"
+        config.vm.hostname="inet2Router"
+        inet2Router.vm.network "private_network", ip: "192.168.255.5", netmask: "255.255.255.252", virtualbox__intnet: "router-net2"
+	inet2Router.vm.provision "shell", inline: <<-SHELL
+	  systemctl restart network
+          ip route add 192.168.0.0/16 via 192.168.255.6 dev eth1
+	SHELL
+    end
+
+    config.vm.define "centralRouter" do |centralRouter|
+        config.vm.box="centos/7"
+        config.vm.hostname="centralRouter"
+        centralRouter.vm.network "private_network", ip: "192.168.255.2", netmask: "255.255.255.252", virtualbox__intnet: "router-net"
+	centralRouter.vm.network "private_network", ip: "192.168.255.6", netmask: "255.255.255.252", virtualbox__intnet: "router-net2"
+	centralRouter.vm.network "private_network", ip: "192.168.0.1", netmask: "255.255.255.240", virtualbox__intnet: "server-net"
+
+        centralRouter.vm.provision "shell", inline: <<-SHELL
+	  systemctl restart network
+          ip route add default via 192.168.255.1 dev eth1
+        SHELL
+    end
+
+    config.vm.define "centralServer" do |centralServer|
+        config.vm.box="centos/7"
+        config.vm.hostname="centralServer"
+        centralServer.vm.network "private_network", ip: "192.168.0.2", netmask: "255.255.255.240", virtualbox__intnet: "server-net"
+        centralServer.vm.provision "shell", inline: <<-SHELL
+	  systemctl restart network
+          ip route add default via 192.168.0.1 dev eth1
+        SHELL
+    end
+
+
+        config.vm.provider "virtualbox" do |vb|
+           vb.memory="128"
         end
-        
-        if boxconfig.key?(:public)
-          box.vm.network "public_network", boxconfig[:public]
-        end
 
-        box.vm.provision "shell", inline: <<-SHELL
+
+        config.vm.provision "shell", inline: <<-SHELL
           mkdir -p ~root/.ssh
                 cp ~vagrant/.ssh/auth* ~root/.ssh
-	  sysctl net.ipv4.conf.all.forwarding=1
+          sysctl net.ipv4.conf.all.forwarding=1
         SHELL
-        
-#        case boxname.to_s
-#        when "inetRouter"
-#          box.vm.provision "shell", run: "always", inline: <<-SHELL
-#            ip route add 192.168.0.0/16 via 192.168.255.2 dev eth1
-#            iptables -t nat -A POSTROUTING ! -d 192.168.0.0/16 -o eth0 -j MASQUERADE
-#	    echo "192.168.0.0/16 via 192.168.255.2 dev eth1" >> /etc/sysconfig/network-scripts/route-eth1
-#	    systemctl restart network
-#            sysctl net.ipv4.conf.all.forwarding=1
-#            SHELL
-#        when "centralRouter"
-#          box.vm.provision "shell", run: "always", inline: <<-SHELL
-#	    ip route add 192.168.2.0/26 via 192.168.255.6 dev eth5
-#            echo "DEFROUTE=no" >> /etc/sysconfig/network-scripts/ifcfg-eth0 
-#            echo "GATEWAY=192.168.255.1" >> /etc/sysconfig/network-scripts/ifcfg-eth1
-#            systemctl restart network
-#            sysctl net.ipv4.conf.all.forwarding=1
-#            SHELL
-#        when "centralServer"
-#          box.vm.provision "shell", run: "always", inline: <<-SHELL
-#            echo "DEFROUTE=no" >> /etc/sysconfig/network-scripts/ifcfg-eth0 
-#            echo "GATEWAY=192.168.0.1" >> /etc/sysconfig/network-scripts/ifcfg-eth1
-#	    systemctl restart network
-#            SHELL
 
-      end
-
-  end
-  
-  
-end
-end
-end
+end 
