@@ -7,29 +7,33 @@ Vagrant.configure("2") do |config|
 
     config.vm.define "inetRouter" do |inetRouter|
         config.vm.box="centos/7"
-        config.vm.hostname="inetRouter"
+        inetRouter.vm.hostname="inetRouter"
         inetRouter.vm.network "private_network", ip: "192.168.255.1", netmask: "255.255.255.252", virtualbox__intnet: "router-net"
 	inetRouter.vm.provision "shell", inline: <<-SHELL
 	  systemctl restart network
 	  ip route add 192.168.0.0/16 via 192.168.255.2 dev eth1
           iptables -t nat -A POSTROUTING ! -d 192.168.0.0/16 -o eth0 -j MASQUERADE
+          sysctl net.ipv4.conf.all.forwarding=1
 	SHELL
     end
 
 
     config.vm.define "inet2Router" do |inet2Router|
         config.vm.box="centos/7"
-        config.vm.hostname="inet2Router"
+        inet2Router.vm.hostname="inet2Router"
         inet2Router.vm.network "private_network", ip: "192.168.255.5", netmask: "255.255.255.252", virtualbox__intnet: "router-net2"
+	inet2Router.vm.network "public_network", ip: "192.168.1.122", netmask: "255.255.255.0", bridge: "wlp16s0"
+		
 	inet2Router.vm.provision "shell", inline: <<-SHELL
 	  systemctl restart network
           ip route add 192.168.0.0/16 via 192.168.255.6 dev eth1
+          sysctl net.ipv4.conf.all.forwarding=1
 	SHELL
     end
 
     config.vm.define "centralRouter" do |centralRouter|
         config.vm.box="centos/7"
-        config.vm.hostname="centralRouter"
+        centralRouter.vm.hostname="centralRouter"
         centralRouter.vm.network "private_network", ip: "192.168.255.2", netmask: "255.255.255.252", virtualbox__intnet: "router-net"
 	centralRouter.vm.network "private_network", ip: "192.168.255.6", netmask: "255.255.255.252", virtualbox__intnet: "router-net2"
 	centralRouter.vm.network "private_network", ip: "192.168.0.1", netmask: "255.255.255.240", virtualbox__intnet: "server-net"
@@ -37,16 +41,18 @@ Vagrant.configure("2") do |config|
         centralRouter.vm.provision "shell", inline: <<-SHELL
 	  systemctl restart network
           ip route add default via 192.168.255.1 dev eth1
+          sysctl net.ipv4.conf.all.forwarding=1
         SHELL
     end
 
     config.vm.define "centralServer" do |centralServer|
         config.vm.box="centos/7"
-        config.vm.hostname="centralServer"
+        centralServer.vm.hostname="centralServer"
         centralServer.vm.network "private_network", ip: "192.168.0.2", netmask: "255.255.255.240", virtualbox__intnet: "server-net"
         centralServer.vm.provision "shell", inline: <<-SHELL
 	  systemctl restart network
           ip route add default via 192.168.0.1 dev eth1
+          sysctl net.ipv4.conf.all.forwarding=1
         SHELL
     end
 
@@ -59,7 +65,6 @@ Vagrant.configure("2") do |config|
         config.vm.provision "shell", inline: <<-SHELL
           mkdir -p ~root/.ssh
                 cp ~vagrant/.ssh/auth* ~root/.ssh
-          sysctl net.ipv4.conf.all.forwarding=1
         SHELL
 
 end 
