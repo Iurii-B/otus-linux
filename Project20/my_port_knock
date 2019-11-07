@@ -1,0 +1,12 @@
+iptables -N TRAFFIC
+iptables -P INPUT DROP
+iptables -D INPUT 4
+iptables -D INPUT 3
+iptables -I INPUT 3 -j TRAFFIC
+iptables -A TRAFFIC -p icmp --icmp-type any -j ACCEPT
+iptables -A TRAFFIC -m state --state ESTABLISHED,RELATED -j ACCEPT
+iptables -A TRAFFIC -m state --state NEW -p tcp --dport 22 -m recent --rcheck --seconds 30 --name SSH0 -j ACCEPT
+iptables -A TRAFFIC -m state --state NEW -p tcp -m recent --name SSH0 --remove -j REJECT
+iptables -A TRAFFIC -m state --state NEW -p tcp -m recent --name SSH0 --remove -j REJECT
+iptables -A TRAFFIC -m state --state NEW -p tcp --dport 6666 -m recent --name SSH0 --set -j REJECT
+iptables -A TRAFFIC -j REJECT
