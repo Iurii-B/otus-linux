@@ -15,17 +15,17 @@ Vagrant.configure("2") do |config|
 	  systemctl restart network
 	  ip route add 192.168.0.0/16 via 192.168.255.2 dev eth1
           iptables -t nat -A POSTROUTING ! -d 192.168.0.0/16 -o eth0 -j MASQUERADE
-	  #iptables -N TRAFFIC
-	  #iptables -P INPUT DROP
-	  #iptables -A INPUT -s 10.0.0.0/8 -j ACCEPT
-	  #iptables -A INPUT -j TRAFFIC
-	  #iptables -A TRAFFIC -p icmp --icmp-type any -j ACCEPT
-	  #iptables -A TRAFFIC -m state --state ESTABLISHED,RELATED -j ACCEPT
-	  #iptables -A TRAFFIC -m state --state NEW -p tcp --dport 22 -m recent --rcheck --seconds 30 --name SSH0 -j ACCEPT
-	  #iptables -A TRAFFIC -m state --state NEW -p tcp -m recent --name SSH0 --remove -j REJECT
-	  #iptables -A TRAFFIC -m state --state NEW -p tcp -m recent --name SSH0 --remove -j REJECT
-	  #iptables -A TRAFFIC -m state --state NEW -p tcp --dport 6666 -m recent --name SSH0 --set -j REJECT
-	  #iptables -A TRAFFIC -j REJECT
+	  iptables -N TRAFFIC
+	  iptables -A INPUT -s 10.0.0.0/8 -j ACCEPT
+	  iptables -P INPUT DROP
+	  iptables -A INPUT -j TRAFFIC
+	  iptables -A TRAFFIC -p icmp --icmp-type any -j ACCEPT
+	  iptables -A TRAFFIC -m state --state ESTABLISHED,RELATED -j ACCEPT
+	  iptables -A TRAFFIC -m state --state NEW -p tcp --dport 22 -m recent --rcheck --seconds 30 --name SSH0 -j ACCEPT
+	  iptables -A TRAFFIC -m state --state NEW -p tcp -m recent --name SSH0 --remove -j REJECT
+	  iptables -A TRAFFIC -m state --state NEW -p tcp -m recent --name SSH0 --remove -j REJECT
+	  iptables -A TRAFFIC -m state --state NEW -p tcp --dport 6666 -m recent --name SSH0 --set -j REJECT
+	  iptables -A TRAFFIC -j REJECT
           sysctl net.ipv4.conf.all.forwarding=1
 	SHELL
     end
@@ -40,7 +40,7 @@ Vagrant.configure("2") do |config|
 	inet2Router.vm.provision "shell", inline: <<-SHELL
 	  systemctl restart network
           ip route add 192.168.0.0/16 via 192.168.255.6 dev eth1
-	  #iptables -A PREROUTING -t nat -i eth2 -p tcp --dport 8080 -j DNAT --to 192.168.0.2:80
+	  iptables -A PREROUTING -t nat -i eth2 -p tcp --dport 8080 -j DNAT --to 192.168.0.2:80
           sysctl net.ipv4.conf.all.forwarding=1
 	SHELL
     end
@@ -57,7 +57,7 @@ Vagrant.configure("2") do |config|
           ip route add default via 192.168.255.1 dev eth1
 	  ip route add 192.168.1.0/24 via 192.168.255.5 dev eth2
           sysctl net.ipv4.conf.all.forwarding=1
-	  #yum -y install nmap
+	  yum -y install nmap
         SHELL
     end
 
@@ -69,9 +69,9 @@ Vagrant.configure("2") do |config|
 	  systemctl restart network
           ip route add default via 192.168.0.1 dev eth1
           sysctl net.ipv4.conf.all.forwarding=1
-	  #yum -y install epel-release
-	  #yum -y install nginx
-	  #systemctl restart nginx
+	  yum -y install epel-release
+	  yum -y install nginx
+	  systemctl start nginx
         SHELL
     end
 
