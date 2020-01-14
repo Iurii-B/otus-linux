@@ -24,17 +24,26 @@ DROP       all  --  anywhere             anywhere
 Это оказалось не лишним, т.к. хотя репозиторий и подключился, система пыталась установить tftp только из репозитория base.
 
 [vagrant@Host2 ~]$sudo yum repolist
+
 Failed to set locale, defaulting to C
+
 Loaded plugins: fastestmirror
+
 Loading mirror speeds from cached hostfile
  * base: mirror.awanti.com
  * extras: mirror.awanti.com
  * updates: mirror.awanti.com
+
 repo id                                                                           repo name                                                                           status
+
 base/7/x86_64                                                                     CentOS-7 - Base                                                                     10097
+
 extras/7/x86_64                                                                   CentOS-7 - Extras                                                                     307
+
 otus                                                                              otus-linux                                                                              2
+
 updates/7/x86_64                                                                  CentOS-7 - Updates                                                                   1010
+
 repolist: 11416
 
 Подключал вот такой конструкцией:
@@ -49,11 +58,17 @@ enabled=1
 При этом установка через localinstall с указанием URL работает нормально:
 
 [vagrant@Host2 ~]$ sudo yum localinstall http://10.0.0.1/repo/tftp-5.2-22.el7.x86_64.rpm
+
 Failed to set locale, defaulting to C
+
 Loaded plugins: fastestmirror
+
 tftp-5.2-22.el7.x86_64.rpm                                                                                                                           |  38 kB  00:00:00
+
 Examining /var/tmp/yum-root-3CQ_sw/tftp-5.2-22.el7.x86_64.rpm: tftp-5.2-22.el7.x86_64
+
 Marking /var/tmp/yum-root-3CQ_sw/tftp-5.2-22.el7.x86_64.rpm to be installed
+
 Resolving Dependencies
 --> Running transaction check
 ---> Package tftp.x86_64 0:5.2-22.el7 will be installed
@@ -61,14 +76,9 @@ Resolving Dependencies
 
 Dependencies Resolved
 
-============================================================================================================================================================================
- Package                           Arch                                Version                                   Repository                                            Size
-============================================================================================================================================================================
 Installing:
  tftp                              x86_64                              5.2-22.el7                                /tftp-5.2-22.el7.x86_64                               52 k
 
-Transaction Summary
-============================================================================================================================================================================
 Install  1 Package
 
 Total size: 52 k
