@@ -98,6 +98,7 @@ Is this ok [y/d/N]:
     8  rpm -i nginx-1.14.1-1.el7_4.ngx.src.rpm
 
    ..........
+
    20  cd /root/rpmbuild/
 
    21  ll
@@ -117,6 +118,7 @@ Is this ok [y/d/N]:
    28  more rpmbuild/SPECS/nginx.spec
 
    .........
+
    34  vi rpmbuild/SPECS/nginx.spec
 
    35  rpmbuild -bb rpmbuild/SPECS/nginx.spec
@@ -126,6 +128,7 @@ Is this ok [y/d/N]:
    37  rpmbuild -bb rpmbuild/SPECS/nginx.spec
 
    ........
+
    57  ll rpmbuild/RPMS/x86_64/
 
    58  exit
@@ -163,6 +166,7 @@ Is this ok [y/d/N]:
    74  systemctl status nginx
 
    75  cat >> /etc/yum.repos.d/otus.repo << EOF
+.
 
 
 [root@Host1 ~]# yum repolist
