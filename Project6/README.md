@@ -8,11 +8,6 @@
 - На Host2 только подключил репозиторий с Host1 и проверил установку из него сервера tftp. Чтобы убедиться, что установка идет из только что созданного репозитория в локальной сети, добавил в iptables следующие правила:
 
 [vagrant@Host2 ~]$ sudo iptables -L
-Chain INPUT (policy ACCEPT)
-target     prot opt source               destination
-
-Chain FORWARD (policy ACCEPT)
-target     prot opt source               destination
 
 Chain OUTPUT (policy ACCEPT)
 target     prot opt source               destination
