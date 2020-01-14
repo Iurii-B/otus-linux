@@ -10,10 +10,15 @@
 [vagrant@Host2 ~]$ sudo iptables -L
 
 Chain OUTPUT (policy ACCEPT)
+
 target     prot opt source               destination
+
 ACCEPT     all  --  anywhere             192.168.0.0/16
+
 ACCEPT     all  --  anywhere             10.0.0.0/8
+
 DROP       all  --  anywhere             anywhere
+
 
 
 Это оказалось не лишним, т.к. хотя репозиторий и подключился, система пыталась установить tftp только из репозитория base.
@@ -75,49 +80,90 @@ Is this ok [y/d/N]:
 - На "сервере" (Host1) все в целом нормально и соответствует лекции и методичке:
 
 [root@Host1 ~]# history
+
     1  yum install redhat-lsb-core
+
     2  yum install wget
+
     3  yum install rpmdevtools
+
     4  yum install rpm-build
+
     5  yum install createrepo
+
     6  yum install yum-utils
+
     7  wget https://nginx.org/packages/centos/7/SRPMS/nginx-1.14.1-1.el7_4.ngx.src.rpm
+
     8  rpm -i nginx-1.14.1-1.el7_4.ngx.src.rpm
+
    ..........
    20  cd /root/rpmbuild/
+
    21  ll
+
    22  pwd
+
    23  cd /root/
+
    24  wget https://www.openssl.org/source/latest.tar.gz
+
    25  tar -xvf latest.tar.gz
+
    26  ll
+
    27  yum-builddep rpmbuild/SPECS/nginx.spec
+
    28  more rpmbuild/SPECS/nginx.spec
+
    .........
    34  vi rpmbuild/SPECS/nginx.spec
+
    35  rpmbuild -bb rpmbuild/SPECS/nginx.spec
+
    36  yum install gcc
+
    37  rpmbuild -bb rpmbuild/SPECS/nginx.spec
+
    ........
    57  ll rpmbuild/RPMS/x86_64/
+
    58  exit
+
    59  yum localinstall
+
    60  yum localinstall --help
+
    61  yum localinstall -y ~/rpmbuild/RPMS/x86_64/nginx-1.14.1-1.el7_4.ngx.x86_64.rpm
+
    62  systemctl start nginx
+
    63  systemctl status nginx
+
    64  exit
+
    65  mkdir /usr/share/nginx/html/repo
+
    66  cp rpmbuild/RPMS/x86_64/nginx-1.14.1-1.el7_4.ngx.x86_64.rpm
+
    67  cp rpmbuild/RPMS/x86_64/nginx-1.14.1-1.el7_4.ngx.x86_64.rpm /usr/share/nginx/html/repo/
+
    68  wget http://mirror.centos.org/centos/7/os/x86_64/Packages/tftp-5.2-22.el7.x86_64.rpm /usr/share/nginx/html/repo/tftp-5.2-22.el7.x86_64.rpm
+
    69  createrepo /usr/share/nginx/html/repo/
+
    70  vim /etc/nginx/conf.d/default.conf
+
    71  vi /etc/nginx/conf.d/default.conf
+
    72  nginx -t
+
    73  systemctl restart nginx
+
    74  systemctl status nginx
+
    75  cat >> /etc/yum.repos.d/otus.repo << EOF
+
 
 [root@Host1 ~]# yum repolist
 Loaded plugins: fastestmirror
