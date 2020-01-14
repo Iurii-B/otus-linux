@@ -97,7 +97,7 @@ Is this ok [y/d/N]:
 
     8  rpm -i nginx-1.14.1-1.el7_4.ngx.src.rpm
 
-   ..........
+       ..........
 
    20  cd /root/rpmbuild/
 
@@ -117,7 +117,7 @@ Is this ok [y/d/N]:
 
    28  more rpmbuild/SPECS/nginx.spec
 
-   .........
+       .........
 
    34  vi rpmbuild/SPECS/nginx.spec
 
@@ -127,7 +127,7 @@ Is this ok [y/d/N]:
 
    37  rpmbuild -bb rpmbuild/SPECS/nginx.spec
 
-   ........
+       ........
 
    57  ll rpmbuild/RPMS/x86_64/
 
@@ -170,16 +170,27 @@ Is this ok [y/d/N]:
 
 
 [root@Host1 ~]# yum repolist
+
 Loaded plugins: fastestmirror
+
 Loading mirror speeds from cached hostfile
+
  * base: mirror.docker.ru
+
  * extras: mirror.yandex.ru
+
  * updates: mirror.yandex.ru
+
 repo id                                                                                                           repo name                                                                                                            status
+
 base/7/x86_64                                                                                                     CentOS-7 - Base                                                                                                      10 097
+
 extras/7/x86_64                                                                                                   CentOS-7 - Extras                                                                                                       307
+
 otus                                                                                                              otus-linux                                                                                                                1
+
 updates/7/x86_64                                                                                                  CentOS-7 - Updates                                                                                                    1 010
+
 repolist: 11 415
 
 
