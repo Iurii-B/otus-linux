@@ -1,0 +1,35 @@
+# -*- mode: ruby -*-
+# vim: set ft=ruby :
+
+disk = "~/VirtualBox\ VMs/secondDisk.vdi"
+
+Vagrant.configure("2") do |config|
+
+    config.vm.define "host1" do |host1|
+
+	config.vm.box="centos/7"        
+        host1.vm.hostname = "host1"
+	host1.vm.network "private_network", ip: "10.0.0.1", netmask: "255.255.255.252", virtualbox__intnet: "net"
+
+        
+	host1.vm.provider "virtualbox" do |vb|
+	 needsController = false
+	 unless File.exist?(disk)
+	  vb.customize ['createhd', '--filename', disk, '--variant', 'Fixed', '--size', 2 * 1024]
+	  needsController =  true
+ 	 end
+	 if needsController == true
+	  vb.customize ["storagectl", :id, "--name", "SATA", "--add", "sata" ]
+	 end
+         vb.customize ['storageattach', :id,  '--storagectl', 'SATA', '--port', 1, '--device', 0, '--type', 'hdd', '--medium', disk]
+         vb.memory="512"
+        end
+
+        host1.vm.provision "shell", inline: <<-SHELL
+          mkdir -p ~root/.ssh
+          cp ~vagrant/.ssh/auth* ~root/.ssh
+	SHELL
+        
+
+    end  
+end
