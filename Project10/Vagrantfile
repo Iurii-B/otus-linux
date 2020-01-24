@@ -1,0 +1,25 @@
+# -*- mode: ruby -*-
+# vim: set ft=ruby :
+
+
+Vagrant.configure("2") do |config|
+
+    config.vm.define "host1" do |host1|
+
+        config.vm.box="centos/7"
+	host1.vm.network "forwarded_port", guest: 22, host: 8022
+        host1.vm.hostname = "host1"
+
+
+        host1.vm.provider "virtualbox" do |vb|
+         vb.memory="512"
+        end
+
+        host1.vm.provision "shell", inline: <<-SHELL
+          mkdir -p ~root/.ssh
+          cp ~vagrant/.ssh/auth* ~root/.ssh
+        SHELL
+    end
+
+
+end
